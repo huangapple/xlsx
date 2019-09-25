@@ -89,6 +89,27 @@ func NewStreamFileBuilderForPath(path string) (*StreamFileBuilder, error) {
 	return NewStreamFileBuilder(file), nil
 }
 
+// AddSheet will add sheets with the given name and return the sheet
+func (sb *StreamFileBuilder) AddSheetN(sheetName string) (*Sheet, error) {
+	if sb.built {
+		return nil, BuiltStreamFileBuilderError
+	}
+	sheet, err := sb.xlsxFile.AddSheet(sheetName)
+
+	if err != nil {
+		// Set built on error so that all subsequent calls to the builder will also fail.
+		sb.built = true
+		return nil, err
+	}
+	sb.styleIds = append(sb.styleIds, []int{})
+	return sheet, err
+}
+
+// GetSheet
+func (sb *StreamFileBuilder) GetSheet(sheetName string) *Sheet {
+	return sb.xlsxFile.Sheet[sheetName]
+}
+
 // AddSheet will add sheets with the given name with the provided headers. The headers cannot be edited later, and all
 // rows written to the sheet must contain the same number of cells as the header. Sheet names must be unique, or an
 // error will be thrown.
