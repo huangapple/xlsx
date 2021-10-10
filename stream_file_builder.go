@@ -79,6 +79,17 @@ func NewStreamFileBuilder(writer io.Writer) *StreamFileBuilder {
 	}
 }
 
+func NewStreamFileBuilderWithFile(writer io.Writer, file *File) *StreamFileBuilder {
+	return &StreamFileBuilder{
+		zipWriter:          zip.NewWriter(writer),
+		xlsxFile:           file,
+		cellTypeToStyleIds: make(map[CellType]int),
+		maxStyleId:         initMaxStyleId,
+		customStreamStyles: make(map[StreamStyle]struct{}),
+		styleIdMap:         make(map[StreamStyle]int),
+	}
+}
+
 // NewStreamFileBuilderForPath takes the name of an XLSX file and returns a builder for it.
 // The file will be created if it does not exist, or truncated if it does.
 func NewStreamFileBuilderForPath(path string) (*StreamFileBuilder, error) {
